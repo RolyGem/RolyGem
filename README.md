@@ -24,6 +24,8 @@
 - **🧠 Living Characters**: Characters remember, evolve, and grow based on story events
 - **🎬 Director AI**: Autonomous dramatic intervention system that keeps stories engaging
 - **💭 Conscious State Engine**: Tracks emotional states and character dynamics in real-time
+- **🤖 Multi-Model Support**: Gemini 2.5, OpenRouter (300+ models), XAI Grok,
+- **🎯 Full Customization**: Control every prompt through the advanced prompt window
 - **📖 Smart Lorebooks**: Context-aware knowledge injection with RAG embeddings
 - **🎨 Multi-Modal**: Integrated image generation with multiple backends
 - **🌐 PWA Ready**: Works offline as a Progressive Web App
@@ -251,9 +253,11 @@ This project is licensed under the **GNU Affero General Public License v3.0** - 
 
 ## 🙏 Acknowledgments
 
-- **Google Gemini Team** for the powerful AI models
-- **Open Source Community** for amazing libraries and tools
-- **Contributors** who help make RolyGem better
+- **Gemini 2.5** makes an excellent companion working behind the scenes
+- **Open Source Community** for the amazing libraries and tools that power this platform
+- **Contributors** who help make RolyGem better every day
+
+> **Note**: RolyGem supports multiple AI providers (OpenRouter, XAI, and more will be added in the future). You have full control over every prompt through the customization window.
 
 ---
 
