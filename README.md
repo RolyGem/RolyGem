@@ -106,12 +106,38 @@ Features:
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### For Windows Users (Easiest Way) 🪟
+
+We provide convenient batch scripts for easy setup:
+
+**First Time Setup:**
+```bash
+# 1. Clone the repository
+git clone https://github.com/RolyGem/RolyGem.git
+cd RolyGem
+
+# 2. Double-click install.bat (or run it from terminal)
+install.bat
+```
+
+**Daily Use:**
+```bash
+# Double-click run.bat (or run it from terminal)
+run.bat
+```
+
+The browser will open automatically at `http://localhost:5173`!
+
+---
+
+### Manual Installation (All Platforms)
+
+#### Prerequisites
 
 - **Node.js** 18+ (recommended: 20+)
 - **Gemini API Key** ([Get one free](https://aistudio.google.com/apikey))
 
-### Installation
+#### Installation
 
 ```bash
 # Clone the repository
@@ -128,7 +154,7 @@ cp .env.example .env.local
 VITE_GEMINI_API_KEY=your_api_key_here
 ```
 
-### Running the App
+#### Running the App
 
 **Development Mode:**
 ```bash
