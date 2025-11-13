@@ -1,0 +1,17 @@
+{
+  "name": "RolyGem",
+  "short_name": "RolyGem",
+  "description": "An advanced, high-performance chat interface with multiple themes and persistent conversation history, powered by Google's Gemini models. It offers a sleek, beautiful, and responsive user experience.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "requestFramePermissions": []
+}

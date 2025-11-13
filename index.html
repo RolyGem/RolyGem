@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>RolyGem</title>
+    
+    <!-- PWA Manifest and Theme -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#4f46e5">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a">
+    
+    <!-- iOS PWA Support -->
+    <link rel="apple-touch-icon" href="/icon.svg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="RolyGem">
+    
+    <!-- Android PWA Support -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="RolyGem">
+    
+    <!-- Mobile optimizations -->
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Windows PWA Support -->
+    <meta name="msapplication-TileColor" content="#4f46e5">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Description for SEO and PWA -->
+    <meta name="description" content="Advanced AI chat application powered by Google Gemini with RAG, multi-character support, and image generation">
+    <meta name="keywords" content="AI, Chat, Gemini, PWA, Progressive Web App">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@200..1000&family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&family=Noto+Sans+Arabic:wght@100..900&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/index.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="importmap">
+{
+  "imports": {
+    "dexie": "https://aistudiocdn.com/dexie@^4.2.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.17.0",
+    "@tigrisdata/vector": "https://aistudiocdn.com/@tigrisdata/vector@^1.0.0-beta.23",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "react-markdown": "https://aistudiocdn.com/react-markdown@^10.1.0",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "remark-gfm": "https://aistudiocdn.com/remark-gfm@^4.0.1",
+    "rehype-raw": "https://aistudiocdn.com/rehype-raw@^7.0.0",
+    "rehype-highlight": "https://aistudiocdn.com/rehype-highlight@^7.0.2",
+    "hnswlib-wasm": "https://aistudiocdn.com/hnswlib-wasm@^0.8.2",
+    "@tanstack/react-virtual": "https://aistudiocdn.com/@tanstack/react-virtual@^3.10.0",
+    "tiktoken": "https://aistudiocdn.com/tiktoken@^1.0.14",
+    "react-dom": "https://aistudiocdn.com/react-dom@^19.1.1",
+    "vite": "https://aistudiocdn.com/vite@^7.1.7",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.0.4",
+    "vite-plugin-wasm": "https://aistudiocdn.com/vite-plugin-wasm@^3.5.0"
+  }
+}
+</script>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

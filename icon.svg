@@ -1,0 +1,207 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark background -->
+  <rect width="512" height="512" rx="96" fill="#1a1625"/>
+  
+  <!-- Main diamond structure with glow -->
+  <g filter="url(#mainGlow)">
+    <!-- Top pyramid (cyan) -->
+    <path d="M256 100 L180 256 L256 256 Z" fill="url(#topLeft)" opacity="0.9"/>
+    <path d="M256 100 L332 256 L256 256 Z" fill="url(#topRight)" opacity="0.9"/>
+    
+    <!-- Top pyramid outline -->
+    <path d="M256 100 L180 256 L332 256 Z" stroke="url(#cyanStroke)" stroke-width="2" fill="none" opacity="0.8"/>
+    
+    <!-- Middle diamond (cyan bright) -->
+    <path d="M180 256 L256 200 L332 256 L256 312 Z" fill="url(#middleDiamond)" opacity="0.95"/>
+    <path d="M180 256 L256 200 L332 256 L256 312 Z" stroke="#4dd9e8" stroke-width="2.5" fill="none"/>
+    
+    <!-- Bottom pyramid (purple) -->
+    <path d="M256 412 L180 256 L256 256 Z" fill="url(#bottomLeft)" opacity="0.85"/>
+    <path d="M256 412 L332 256 L256 256 Z" fill="url(#bottomRight)" opacity="0.85"/>
+    
+    <!-- Bottom pyramid outline -->
+    <path d="M256 412 L180 256 L332 256 Z" stroke="url(#purpleStroke)" stroke-width="2" fill="none" opacity="0.7"/>
+    
+    <!-- Inner glow lines -->
+    <line x1="256" y1="100" x2="256" y2="200" stroke="url(#whiteGlow)" stroke-width="3" opacity="0.6"/>
+    <line x1="256" y1="312" x2="256" y2="412" stroke="url(#purpleGlow)" stroke-width="3" opacity="0.5"/>
+  </g>
+  
+  <!-- Central bright star -->
+  <g filter="url(#starGlow)">
+    <circle cx="256" cy="256" r="25" fill="url(#centerStar)" opacity="0.9"/>
+    <path d="M256 231 L256 281 M231 256 L281 256" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.95"/>
+    <path d="M238 238 L274 274 M274 238 L238 274" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+  </g>
+  
+  <!-- Purple star bursts (left and right) -->
+  <g opacity="0.85">
+    <!-- Left burst -->
+    <path d="M140 256 L120 256 M130 246 L130 266 M125 250 L135 262 M135 250 L125 262" 
+          stroke="url(#purpleBurst)" stroke-width="2.5" stroke-linecap="round">
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+    </path>
+    <line x1="100" y1="256" x2="145" y2="256" stroke="url(#purpleBurst)" stroke-width="1.5" opacity="0.6"/>
+    <line x1="110" y1="246" x2="135" y2="256" stroke="url(#purpleBurst)" stroke-width="1.5" opacity="0.5"/>
+    <line x1="110" y1="266" x2="135" y2="256" stroke="url(#purpleBurst)" stroke-width="1.5" opacity="0.5"/>
+    
+    <!-- Right burst -->
+    <path d="M372 256 L392 256 M382 246 L382 266 M377 250 L387 262 M387 250 L377 262" 
+          stroke="url(#purpleBurst)" stroke-width="2.5" stroke-linecap="round">
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" begin="1s" repeatCount="indefinite"/>
+    </path>
+    <line x1="412" y1="256" x2="367" y2="256" stroke="url(#purpleBurst)" stroke-width="1.5" opacity="0.6"/>
+    <line x1="402" y1="246" x2="377" y2="256" stroke="url(#purpleBurst)" stroke-width="1.5" opacity="0.5"/>
+    <line x1="402" y1="266" x2="377" y2="256" stroke="url(#purpleBurst)" stroke-width="1.5" opacity="0.5"/>
+  </g>
+  
+  <!-- Sparkles around the diamond -->
+  <!-- Top sparkles -->
+  <g opacity="0.9">
+    <circle cx="256" cy="70" r="3" fill="#ffffff">
+      <animate attributeName="opacity" values="0.4;1;0.4" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="220" cy="90" r="2" fill="#4dd9e8">
+      <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="292" cy="90" r="2" fill="#4dd9e8">
+      <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2.2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Side sparkles (cyan) -->
+  <g opacity="0.8">
+    <path d="M165 210 L168 210 M166.5 208.5 L166.5 211.5" stroke="#4dd9e8" stroke-width="1.5" stroke-linecap="round">
+      <animate attributeName="opacity" values="0.4;1;0.4" dur="2.5s" repeatCount="indefinite"/>
+    </path>
+    <path d="M347 210 L350 210 M348.5 208.5 L348.5 211.5" stroke="#4dd9e8" stroke-width="1.5" stroke-linecap="round">
+      <animate attributeName="opacity" values="0.4;1;0.4" dur="2.3s" repeatCount="indefinite"/>
+    </path>
+    <path d="M155 256 L158 256 M156.5 254.5 L156.5 257.5" stroke="#4dd9e8" stroke-width="1.5" stroke-linecap="round">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+    </path>
+    <path d="M357 256 L360 256 M358.5 254.5 L358.5 257.5" stroke="#4dd9e8" stroke-width="1.5" stroke-linecap="round">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="2.1s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Bottom sparkles (purple) -->
+  <g opacity="0.8">
+    <path d="M165 302 L168 302 M166.5 300.5 L166.5 303.5" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round">
+      <animate attributeName="opacity" values="0.4;1;0.4" dur="2.2s" repeatCount="indefinite"/>
+    </path>
+    <path d="M347 302 L350 302 M348.5 300.5 L348.5 303.5" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round">
+      <animate attributeName="opacity" values="0.4;1;0.4" dur="2.4s" repeatCount="indefinite"/>
+    </path>
+    <circle cx="200" cy="370" r="2" fill="#a78bfa">
+      <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2.6s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="312" cy="370" r="2" fill="#a78bfa">
+      <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2.8s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Small diamond sparkles -->
+  <g opacity="0.7">
+    <path d="M190 150 L193 153 L190 156 L187 153 Z" fill="#ffffff">
+      <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite"/>
+    </path>
+    <path d="M322 150 L325 153 L322 156 L319 153 Z" fill="#ffffff">
+      <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3.2s" repeatCount="indefinite"/>
+    </path>
+    <path d="M190 362 L193 365 L190 368 L187 365 Z" fill="#c4b5fd">
+      <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3.4s" repeatCount="indefinite"/>
+    </path>
+    <path d="M322 362 L325 365 L322 368 L319 365 Z" fill="#c4b5fd">
+      <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3.6s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <defs>
+    <!-- Gradients for top pyramid (cyan) -->
+    <linearGradient id="topLeft" x1="180" y1="256" x2="256" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="50%" stop-color="#4dd9e8"/>
+      <stop offset="100%" stop-color="#a5f3fc"/>
+    </linearGradient>
+    
+    <linearGradient id="topRight" x1="332" y1="256" x2="256" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="50%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#67e8f9"/>
+    </linearGradient>
+    
+    <!-- Middle diamond gradient -->
+    <radialGradient id="middleDiamond" cx="256" cy="256" r="76" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ecfeff"/>
+      <stop offset="40%" stop-color="#67e8f9"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </radialGradient>
+    
+    <!-- Gradients for bottom pyramid (purple) -->
+    <linearGradient id="bottomLeft" x1="180" y1="256" x2="256" y2="412" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="50%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    
+    <linearGradient id="bottomRight" x1="332" y1="256" x2="256" y2="412" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6d28d9"/>
+      <stop offset="50%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+    
+    <!-- Stroke gradients -->
+    <linearGradient id="cyanStroke" x1="180" y1="256" x2="332" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#a5f3fc"/>
+    </linearGradient>
+    
+    <linearGradient id="purpleStroke" x1="180" y1="256" x2="332" y2="412" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#c4b5fd"/>
+    </linearGradient>
+    
+    <!-- Glow gradients -->
+    <linearGradient id="whiteGlow" x1="256" y1="100" x2="256" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#a5f3fc"/>
+    </linearGradient>
+    
+    <linearGradient id="purpleGlow" x1="256" y1="312" x2="256" y2="412" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#c4b5fd"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    
+    <!-- Center star gradient -->
+    <radialGradient id="centerStar" cx="256" cy="256" r="25" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="60%" stop-color="#e0f2fe"/>
+      <stop offset="100%" stop-color="#67e8f9"/>
+    </radialGradient>
+    
+    <!-- Purple burst gradient -->
+    <linearGradient id="purpleBurst" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="50%" stop-color="#c4b5fd"/>
+      <stop offset="100%" stop-color="#ddd6fe"/>
+    </linearGradient>
+    
+    <!-- Glow filters -->
+    <filter id="mainGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="starGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+</svg>

@@ -1,0 +1,24 @@
+{
+  "name": "RolyGem",
+  "short_name": "RolyGem",
+  "description": "Advanced AI chat application",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#4f46e5",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity"],
+  "prefer_related_applications": false,
+  "lang": "ar",
+  "dir": "auto"
+}
+
