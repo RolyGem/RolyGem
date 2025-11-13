@@ -15,7 +15,7 @@ Get started with RolyGem in 5 minutes!
 
 ```bash
 # 1. Clone the repository
-git clone git@github.com:RolyGem/RolyGem.git
+git clone https://github.com/RolyGem/RolyGem.git
 cd RolyGem
 
 # 2. Install dependencies

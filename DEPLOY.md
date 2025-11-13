@@ -17,7 +17,7 @@ git add .
 git commit -m "Initial commit: RolyGem AI Roleplay Platform"
 
 # Link to GitHub repository
-git remote add origin git@github.com:RolyGem/RolyGem.git
+git remote add origin https://github.com/RolyGem/RolyGem.git
 
 # Set main branch
 git branch -M main

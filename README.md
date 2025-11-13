@@ -115,7 +115,7 @@ Features:
 
 ```bash
 # Clone the repository
-git clone git@github.com:RolyGem/RolyGem.git
+git clone https://github.com/RolyGem/RolyGem.git
 cd RolyGem
 
 # Install dependencies
