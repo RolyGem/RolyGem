@@ -273,15 +273,28 @@ export async function countTokens(
 
 /**
  * Summarizes a piece of text using the Gemini 2.5 Flash model.
+ * Includes validation and fallback mechanisms for quality assurance.
  * @param text - The text to summarize.
  * @param settings - Optional settings (will be fetched if not provided)
+ * @param targetRetention - Target retention rate (0.4 = keep 40% of length). Default 0.4.
  * @returns A promise that resolves to the summarized text.
  */
-const summarizeWithGemini = async (text: string, settings?: Settings): Promise<string> => {
+const summarizeWithGemini = async (
+    text: string, 
+    settings?: Settings,
+    targetRetention: number = 0.4
+): Promise<string> => {
     // Get prompt configuration from user settings (AI Prompts tab)
     const promptConfig = await getPromptConfig(PROMPT_IDS.CONTEXT_SUMMARIZATION, settings);
 
     const systemPrompt = promptConfig.template;
+    const targetLength = Math.ceil(text.length * targetRetention);
+    
+    // 🔧 CRITICAL FIX: Build enhanced prompt with target length guidance
+    const enhancedUserPrompt = `Summarize the following text. IMPORTANT: Your summary should be approximately ${Math.round(targetRetention * 100)}% of the original length (target: ~${targetLength} characters from ${text.length} characters).
+
+Text to summarize:
+${text}`;
     
     try {
         const response = await callGeminiWithRetry(
@@ -289,7 +302,7 @@ const summarizeWithGemini = async (text: string, settings?: Settings): Promise<s
                 model: promptConfig.model, // ✅ From AI Prompts settings
                 contents: [{
                     role: 'user',
-                    parts: [{ text }]
+                    parts: [{ text: enhancedUserPrompt }]
                 }],
                 config: {
                     systemInstruction: systemPrompt,
@@ -301,13 +314,39 @@ const summarizeWithGemini = async (text: string, settings?: Settings): Promise<s
             60000 // 60 seconds timeout
         );
         const summary = response.text;
-        if (!summary) {
-            throw new Error("Gemini did not return a valid summary.");
+        
+        // ✅ QUALITY FIX 1: Validate summary is not empty
+        if (!summary || summary.trim().length === 0) {
+            console.warn('⚠️ Gemini returned empty summary, using truncation fallback');
+            return text.substring(0, targetLength) + '...';
         }
+        
+        // ✅ QUALITY FIX 2: Detect refusal messages (safety filter)
+        const refusalPatterns = [
+            /I cannot|I can't|I'm unable|I apologize|I'm sorry/i,
+            /inappropriate|unsafe|harmful|violates/i,
+            /لا أستطيع|لا يمكنني|آسف|أعتذر/i // Arabic refusal patterns
+        ];
+        
+        const isRefusal = refusalPatterns.some(pattern => pattern.test(summary));
+        if (isRefusal) {
+            console.warn('⚠️ Gemini refused to summarize (safety filter), using truncation fallback');
+            return text.substring(0, targetLength) + '...';
+        }
+        
+        // ✅ QUALITY FIX 3: Check if summary is too short (less than 10% of target)
+        if (summary.trim().length < targetLength * 0.1) {
+            console.warn(`⚠️ Summary too short (${summary.length} < ${targetLength * 0.1}), using truncation fallback`);
+            return text.substring(0, targetLength) + '...';
+        }
+        
         return summary.trim();
     } catch (error) {
         console.error("Error summarizing with Gemini:", error);
-        throw error;
+        // ✅ QUALITY FIX 4: Return truncation fallback instead of throwing
+        // This prevents complete failure and maintains partial context
+        console.warn('⚠️ Falling back to truncation due to API error');
+        return text.substring(0, targetLength) + '...';
     }
 };
 
@@ -358,17 +397,6 @@ async function summarizeChunk(
     const originalLength = text.length;
     const targetLength = Math.ceil(originalLength * compressionLevel);
 
-    const prompt = `Summarize the following conversation segment. Original length: ${originalLength} chars. Target: ~${targetLength} chars (${Math.round(compressionLevel * 100)}% retention).
-
-Preserve key information:
-- Important events and decisions
-- Character emotions and relationships
-- Critical dialogue
-- Plot developments
-
-Conversation:
-${text}`;
-
     const startTime = Date.now();
     const inputTokens = await countTokens(text);
     let status: 'success' | 'fallback' | 'error' = 'success';
@@ -383,10 +411,11 @@ ${text}`;
         if (settings.contextManagement.summarizerModel === 'openrouter') {
             summary = await summarizeWithOpenRouter(text, compressionLevel, settings);
         } else if (settings.contextManagement.summarizerModel === 'koboldcpp') {
-            summary = await summarizeWithKobold(prompt, settings.contextManagement.koboldcppUrl);
+            // ✅ Use improved KoboldCPP with adaptive retention rate
+            summary = await summarizeWithKobold(text, settings.contextManagement.koboldcppUrl, compressionLevel);
         } else {
-            // Default: Gemini
-            summary = await summarizeWithGemini(prompt, settings);
+            // Default: Gemini with built-in validation and fallback
+            summary = await summarizeWithGemini(text, settings, compressionLevel);
         }
         
         const duration = Date.now() - startTime;
@@ -824,32 +853,169 @@ export const manageContext = async (
         // Use Smart Summarization with Dynamic Recent Zone
         return await smartSummarize(history, maxTokens, systemPromptTokens, settings, model, conversationId);
     } else if (settings.contextManagement.strategy === 'summarize') {
-        // Legacy simple summarization
-        const textToSummarize = managedMessages.map(m => {
+        // Basic summarization strategy (Summarize Oldest)
+        // Compresses old messages into a single summary message
+        
+        // ✅ CRITICAL FIX 3: Check if there are any messages to summarize
+        if (managedMessages.length === 0) {
+            // Nothing to summarize, return kept messages as-is
+            return { managedHistory: keptMessages, wasManaged: false };
+        }
+        
+        // 🔧 PERFORMANCE FIX: Summarize extra messages to create buffer space
+        // Target: keep only 90% of max tokens after summarization (more conservative)
+        // Max buffer creation: 5,000 tokens (prevents over-summarization)
+        const targetTokensAfterSummarization = Math.floor(maxTokens * 0.90);
+        const MAX_BUFFER_TOKENS = 5000; // Limit how much we summarize extra
+        
+        // Calculate current keptMessages tokens
+        let keptMessagesTokens = systemPromptTokens;
+        for (const msg of keptMessages) {
+            keptMessagesTokens += await countMessageTokens(msg, model, settings);
+        }
+        
+        const bufferNeeded = Math.min(
+            MAX_BUFFER_TOKENS, 
+            Math.max(0, keptMessagesTokens - targetTokensAfterSummarization)
+        );
+        
+        // If we need more buffer, include some of keptMessages in summarization
+        let messagesToSummarize = managedMessages;
+        let finalKeptMessages = keptMessages;
+        
+        if (bufferNeeded > 0 && keptMessages.length > 0) {
+            // Calculate how many additional messages to summarize (limited by MAX_BUFFER_TOKENS)
+            let additionalTokens = 0;
+            let additionalCount = 0;
+            
+            for (let i = 0; i < keptMessages.length && additionalTokens < bufferNeeded; i++) {
+                const msgTokens = await countMessageTokens(keptMessages[i], model, settings);
+                if (additionalTokens + msgTokens > bufferNeeded) break; // Stop if exceeds limit
+                additionalTokens += msgTokens;
+                additionalCount++;
+            }
+            
+            // Include first additionalCount messages from keptMessages in summarization
+            messagesToSummarize = [...managedMessages, ...keptMessages.slice(0, additionalCount)];
+            finalKeptMessages = keptMessages.slice(additionalCount);
+            
+            console.log(`📊 Creating buffer: summarizing ${additionalCount} extra messages (~${additionalTokens} tokens, target buffer: ${bufferNeeded})`);
+        }
+        
+        // Build text from messages to be summarized
+        // Uses existing summaries if available (prevents nested summarization)
+        const textToSummarize = messagesToSummarize.map(m => {
             const content = m.summary || m.content;
             return `${m.role}: ${content}`
         }).join('\n\n');
         
-        let summary = '';
-        try {
-            if (settings.contextManagement.summarizerModel === 'koboldcpp') {
-                summary = await summarizeWithKobold(textToSummarize, settings.contextManagement.koboldcppUrl);
-            } else { // 'gemini'
-                summary = await summarizeWithGemini(textToSummarize, settings);
-            }
-        } catch (e) {
-            console.error("Failed to summarize context, falling back to trimming.", e);
-            return { managedHistory: keptMessages, wasManaged: true };
+        // ✅ QUALITY FIX 5: Add performance tracking and logging
+        const startTime = Date.now();
+        const inputTokens = await countTokens(textToSummarize, model, settings);
+        
+        // ⚠️ WARNING: Check if input is abnormally large
+        const LARGE_INPUT_THRESHOLD = 10000; // Warn if > 10K tokens
+        if (inputTokens > LARGE_INPUT_THRESHOLD) {
+            console.warn(`⚠️ WARNING: Large summarization input detected (${inputTokens} tokens)`);
+            console.warn(`⚠️ This may indicate buffer logic is too aggressive`);
+            console.warn(`⚠️ managedMessages: ${managedMessages.length}, buffer messages: ${messagesToSummarize.length - managedMessages.length}`);
         }
         
+        // 🔧 Using 30% retention for better compression (saves more tokens)
+        const retentionRate = 0.3; // 30% retention = 70% compression
+        
+        let summary = '';
+        let summaryStatus: 'success' | 'fallback' | 'error' = 'success';
+        let errorMessage: string | undefined;
+        
+        try {
+            // ✅ CRITICAL FIX 2: Support all three summarizer engines
+            
+            if (settings.contextManagement.summarizerModel === 'koboldcpp') {
+                summary = await summarizeWithKobold(textToSummarize, settings.contextManagement.koboldcppUrl, retentionRate);
+            } else if (settings.contextManagement.summarizerModel === 'openrouter') {
+                summary = await summarizeWithOpenRouter(textToSummarize, retentionRate, settings);
+            } else {
+                // Default: Gemini (most reliable, with built-in validation)
+                summary = await summarizeWithGemini(textToSummarize, settings, retentionRate);
+            }
+            
+            // Check if summary is actually a fallback (truncated text)
+            if (summary.endsWith('...') && summary.length < textToSummarize.length * 0.5) {
+                summaryStatus = 'fallback';
+                console.warn('⚠️ Summarization returned fallback (truncated text)');
+            }
+        } catch (e: any) {
+            console.error("Failed to summarize context, falling back to trimming.", e);
+            summaryStatus = 'error';
+            errorMessage = e?.message || 'Unknown error';
+            // On failure, discard old messages and keep only recent ones
+            return { managedHistory: finalKeptMessages, wasManaged: true };
+        }
+        
+        const duration = Date.now() - startTime;
+        const outputTokens = await countTokens(summary, model, settings);
+        
+        // ✅ QUALITY FIX 6: Log summarization details if debug mode is enabled
+        if (settings.contextManagement.debugMode && conversationId) {
+            summarizationDebugService.addLog({
+                timestamp: Date.now(),
+                conversationId,
+                zone: 'basic', // Basic summarization - distinct from Smart zones
+                inputTokens,
+                outputTokens,
+                retentionRate: retentionRate,
+                model: getModelNameForDebug(settings.contextManagement.summarizerModel, settings),
+                status: summaryStatus,
+                duration,
+                errorMessage,
+                inputPreview: textToSummarize.substring(0, 500) + (textToSummarize.length > 500 ? '...' : ''),
+                outputSummary: summary
+            });
+        }
+        
+        // ✅ CRITICAL FIX 1: Create properly identified summary message
+        // This ensures compatibility with Smart Summarization if user switches strategies
         const summaryMessage: Message = {
             id: generateUUID(),
             role: 'model',
-            content: `[Previous conversation summary]:\n${summary}`,
-            timestamp: managedMessages[managedMessages.length - 1].timestamp,
+            content: `[Context Summary]:\n${summary}`, // Pattern matches Smart Summarization detection
+            summary: summary, // Store clean summary for future re-summarization
+            isSummary: true,  // Flag for easy identification
+            timestamp: messagesToSummarize[messagesToSummarize.length - 1]?.timestamp || Date.now(), // Safe access
         };
 
-        return { managedHistory: [summaryMessage, ...keptMessages], wasManaged: true };
+        const proposedHistory = [summaryMessage, ...finalKeptMessages];
+        
+        // 🔒 SAFETY CHECK: Verify final history fits within context window
+        let finalHistoryTokens = systemPromptTokens;
+        for (const msg of proposedHistory) {
+            finalHistoryTokens += await countMessageTokens(msg, model, settings);
+        }
+        
+        if (finalHistoryTokens > maxTokens) {
+            console.warn(`⚠️ Summarization result still exceeds limit! (${finalHistoryTokens} > ${maxTokens})`);
+            console.warn(`⚠️ Performing emergency trim: removing oldest messages from finalKeptMessages`);
+            
+            // Emergency trim: remove messages from start until we fit
+            let trimmedMessages = [...proposedHistory];
+            let currentTokens = finalHistoryTokens;
+            let trimmedCount = 0;
+            
+            // Keep summary message, trim from finalKeptMessages
+            for (let i = 1; i < trimmedMessages.length && currentTokens > maxTokens; i++) {
+                const msgTokens = await countMessageTokens(trimmedMessages[1], model, settings); // Always remove index 1 (after summary)
+                trimmedMessages.splice(1, 1);
+                currentTokens -= msgTokens;
+                trimmedCount++;
+            }
+            
+            console.warn(`⚠️ Emergency trimmed ${trimmedCount} messages. Final: ${currentTokens} tokens`);
+            return { managedHistory: trimmedMessages, wasManaged: true };
+        }
+        
+        console.log(`✅ Summarization complete: ${finalHistoryTokens}/${maxTokens} tokens (${Math.round(finalHistoryTokens/maxTokens*100)}%)`);
+        return { managedHistory: proposedHistory, wasManaged: true };
     }
 
     // Default to 'trim'

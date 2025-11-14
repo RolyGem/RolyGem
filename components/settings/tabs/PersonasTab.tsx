@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { Settings, UserPersona } from '../../../types';
+import { CollapsibleNotice } from '../../common/CollapsibleNotice';
 import { generateUUID } from '../../../utils/uuid';
 import { PlusIcon } from '../../icons/PlusIcon';
 import { TrashIcon } from '../../icons/TrashIcon';
@@ -95,11 +96,17 @@ const PersonasTab: React.FC<PersonasTabProps> = ({
   return (
     <div className="flex-1 flex flex-col min-h-0">
         {/* Roleplay Purpose Notice */}
-        <div className="p-4 mx-6 mt-6 mb-2 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
-            <p className="text-sm font-semibold text-purple-800 dark:text-purple-200">🎭 Personas for Roleplay</p>
-            <p className="text-xs text-purple-700 dark:text-purple-300 mt-1">
-                This feature is specifically designed for roleplaying scenarios. Create different personas to define how the AI should interact with you in various roleplay contexts.
-            </p>
+        <div className="mx-6 mt-6 mb-2">
+            <CollapsibleNotice
+                title="Personas for Roleplay"
+                variant="purple"
+                icon="🎭"
+                defaultExpanded={false}
+            >
+                <p>
+                    This feature is specifically designed for roleplaying scenarios. Create different personas to define how the AI should interact with you in various roleplay contexts.
+                </p>
+            </CollapsibleNotice>
         </div>
 
         <div className="flex-1 flex min-h-0">

@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Settings } from '../../../types';
 import { CheckboxInput, SliderInput, SegmentedControl } from '../common/SettingsInputComponents';
+import { CollapsibleNotice } from '../../common/CollapsibleNotice';
 
 interface AgentsTabProps {
   settings: Settings;
@@ -33,29 +34,33 @@ const AgentsTab: React.FC<AgentsTabProps> = ({ settings, onLiveUpdate }) => {
          </p>
 
         {/* Manual Usage Notice */}
-        <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-            <p className="text-sm font-semibold text-green-800 dark:text-green-200">💡 Manual Trigger Available</p>
-            <p className="text-xs text-green-700 dark:text-green-300 mt-1">
+        <CollapsibleNotice
+            title="Manual Trigger Available"
+            variant="green"
+            icon="💡"
+            defaultExpanded={false}
+        >
+            <p>
                 You can manually trigger AI Agents at any time using the <strong>"Tools"</strong> menu in the chat input, even if automatic intervention is disabled.
             </p>
-        </div>
+        </CollapsibleNotice>
 
         {/* Important Notice */}
-        <div className="p-4 border-2 border-green-500/30 bg-green-500/10 rounded-lg">
-            <div className="flex items-start gap-3">
-                <span className="text-2xl">✨</span>
-                <div className="flex-1">
-                    <h4 className="font-semibold text-green-400 mb-1">Smart AI Systems Active</h4>
-                    <p className="text-xs text-text-secondary leading-relaxed">
-                        All AI agents now use <strong>intelligent detection</strong> instead of fixed intervals. 
-                        They activate only when needed based on conversation context, dramatically reducing API costs (70-85% savings!) while maintaining quality.
-                        <br /><br />
-                        <strong>Note:</strong> Smart mode is configured per-conversation in the Authors Note panel. 
-                        The settings below apply to the traditional frequency mode (if enabled per-conversation).
-                    </p>
-                </div>
-            </div>
-        </div>
+        <CollapsibleNotice
+            title="Smart AI Systems Active"
+            variant="green"
+            icon="✨"
+            defaultExpanded={false}
+        >
+            <p>
+                All AI agents now use <strong>intelligent detection</strong> instead of fixed intervals. 
+                They activate only when needed based on conversation context, dramatically reducing API costs (70-85% savings!) while maintaining quality.
+            </p>
+            <p className="pt-2">
+                <strong>Note:</strong> Smart mode is configured per-conversation in the Authors Note panel. 
+                The settings below apply to the traditional frequency mode (if enabled per-conversation).
+            </p>
+        </CollapsibleNotice>
 
         <div className="space-y-4 p-4 border rounded-lg border-color">
             <CheckboxInput

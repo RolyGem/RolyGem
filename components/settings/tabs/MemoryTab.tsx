@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { Settings, IdentityProfile, IdentityFact } from '../../../types';
 import { generateUUID } from '../../../utils/uuid';
+import { CollapsibleNotice } from '../../common/CollapsibleNotice';
 import { PlusIcon } from '../../icons/PlusIcon';
 import { TrashIcon } from '../../icons/TrashIcon';
 import { LoaderIcon } from '../../icons/LoaderIcon';
@@ -192,16 +193,20 @@ const MemoryTab: React.FC<MemoryTabProps> = ({
         </p>
         
         {/* Warning and Usage Instructions */}
-        <div className="p-4 mb-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded-lg space-y-2">
-          <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">⚠️ Not for Roleplay</p>
-          <div className="text-xs text-yellow-700 dark:text-yellow-300 space-y-1">
+        <div className="mb-4">
+          <CollapsibleNotice
+            title="Not for Roleplay"
+            variant="yellow"
+            icon="⚠️"
+            defaultExpanded={false}
+          >
             <p>Identity Memory is designed for <strong>raw, factual information</strong> to help the AI remember you across conversations—not for roleplay scenarios.</p>
             <p className="pt-2"><strong>How to Add Content:</strong></p>
             <ul className="list-disc list-inside pl-2 space-y-0.5">
               <li><strong>Manually:</strong> Create profiles below and add facts directly</li>
               <li><strong>From Chat:</strong> Use the <strong>"Tools"</strong> menu in the chat input → Select <strong>"Add to Identity Memory"</strong> to save information from conversations</li>
             </ul>
-          </div>
+          </CollapsibleNotice>
         </div>
         <div className="flex-1 flex min-h-[30rem] border border-color rounded-lg">
           <aside className="w-1/3 border-r border-color flex flex-col">

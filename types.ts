@@ -842,7 +842,7 @@ export interface GeneratedSong {
 }
 
 // Summarization Debug Types
-export type SummarizationZone = 'archive' | 'midTerm' | 'recent';
+export type SummarizationZone = 'archive' | 'midTerm' | 'recent' | 'basic';
 export type SummarizationStatus = 'success' | 'fallback' | 'error';
 
 export interface SummarizationDebugLog {

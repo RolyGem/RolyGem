@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { CollapsibleNotice } from '../../common/CollapsibleNotice';
 import type { Settings, Model } from '../../../types';
 import { NumberInput, SegmentedControl, CheckboxInput, getStatusIndicator, SelectInput } from '../common/SettingsInputComponents';
 import { testOpenRouterConnection, fetchOpenRouterModels } from '../../../services/ai/openRouterSummarizer';
@@ -114,19 +115,23 @@ const ContextTab: React.FC<ContextTabProps> = ({
     <div className="p-6 overflow-y-auto space-y-6 flex-1">
          <h3 className="text-lg font-semibold">Context Management</h3>
          
-         {/* Critical Warning about Summarization Issues */}
-         <div className="p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-300 dark:border-red-700 rounded-lg space-y-2">
-            <p className="text-sm font-bold text-red-800 dark:text-red-200">⚠️ Important Notice - Summarization Under Maintenance</p>
-            <div className="text-xs text-red-700 dark:text-red-300 space-y-1">
-                <p><strong>Known Issues:</strong></p>
-                <ul className="list-disc list-inside pl-2 space-y-0.5">
-                    <li>Smart Summarization is currently experiencing quality issues and may not work as expected</li>
-                    <li>Normal Summarization also has degraded performance at this time</li>
-                    <li>We recommend using the <strong>"Trim Oldest"</strong> strategy for now to avoid data loss</li>
-                </ul>
-                <p className="pt-2"><strong>Coming Soon:</strong> Advanced summarization with significantly improved accuracy and context retention is currently under development and will be available in the near future.</p>
-            </div>
-         </div>
+         {/* Status Update - Smart Summarization Coming Soon */}
+         <CollapsibleNotice
+            title="Summarization Status Update"
+            variant="yellow"
+            icon="✨"
+            defaultExpanded={false}
+         >
+            <p>✅ <strong>Summarize Oldest</strong> is now fully operational and working perfectly! Use it for reliable context management.</p>
+            <p className="pt-1">🚧 <strong>Smart Summarization</strong> is currently under development with exciting improvements:</p>
+            <ul className="list-disc list-inside pl-3 space-y-0.5 text-xs">
+                <li>Hierarchical compression with Archive & Mid-term zones for better context retention</li>
+                <li>Dynamic Recent Zone that adapts to conversation flow</li>
+                <li>Intelligent summary reuse to prevent redundant processing</li>
+                <li>Advanced chunk-based processing for large conversations</li>
+            </ul>
+            <p className="pt-1">🎯 Smart Summarization will be available soon with significantly improved accuracy and performance!</p>
+         </CollapsibleNotice>
 
          <div className="p-4 bg-secondary-bg rounded-lg space-y-2">
             <p className="text-sm">Current Model: <span className="font-semibold text-accent-primary">{selectedModel.name}</span></p>

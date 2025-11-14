@@ -65,6 +65,8 @@ export const SummarizationDebugger: React.FC<SummarizationDebuggerProps> = ({
                 return 'text-blue-600 dark:text-blue-400 bg-blue-500/10';
             case 'recent':
                 return 'text-green-600 dark:text-green-400 bg-green-500/10';
+            case 'basic':
+                return 'text-purple-600 dark:text-purple-400 bg-purple-500/10';
             default:
                 return 'text-gray-600 dark:text-gray-400 bg-gray-500/10';
         }
@@ -78,6 +80,8 @@ export const SummarizationDebugger: React.FC<SummarizationDebuggerProps> = ({
                 return 'Mid-term';
             case 'recent':
                 return 'Recent';
+            case 'basic':
+                return 'Basic';
             default:
                 return zone;
         }

@@ -39,31 +39,68 @@ export const checkKoboldEmbeddingConnection = async (url: string): Promise<{ isC
     }
 };
 
-export const summarizeWithKobold = async (text: string, url: string): Promise<string> => {
-    const prompt = `[INST] Summarize the key events from the following text:\n${text}\n[/INST]\nSummary:`;
+/**
+ * Summarize text using KoboldCPP local inference
+ * ✅ QUALITY FIX 7: Enhanced with adaptive max_length based on input size
+ * @param text - Text to summarize
+ * @param url - KoboldCPP server URL
+ * @param retentionRate - Target retention rate (default 0.4 = 40%)
+ * @returns Summarized text
+ */
+export const summarizeWithKobold = async (
+    text: string, 
+    url: string,
+    retentionRate: number = 0.4
+): Promise<string> => {
+    // Calculate adaptive max_length based on input size and retention rate
+    // Conservative estimate: 1 token ≈ 4 characters
+    const estimatedInputTokens = Math.ceil(text.length / 4);
+    const targetOutputTokens = Math.ceil(estimatedInputTokens * retentionRate);
+    // Clamp between 256 and 2048 tokens for reasonable output
+    const maxLength = Math.max(256, Math.min(2048, targetOutputTokens));
+    
+    const prompt = `[INST] Summarize the following text, preserving key events, character interactions, and important details. Target length: approximately ${Math.round(retentionRate * 100)}% of original.\n\n${text}\n[/INST]\nSummary:`;
+    
     try {
         const response = await fetch(`${url}/api/v1/generate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 prompt,
-                max_context_length: 4096,
-                max_length: 512,
+                max_context_length: 8192, // Increased from 4096 for larger contexts
+                max_length: maxLength,     // Adaptive based on input size
                 rep_pen: 1.1,
-                temperature: 0.7,
+                temperature: 0.3,          // Lower for more focused summarization (was 0.7)
                 top_p: 0.9,
                 top_k: 40,
-                stop_sequence: ['[INST]']
+                stop_sequence: ['[INST]', '\n\n[INST]'] // Additional stop sequence
             }),
         });
+        
         if (!response.ok) {
-            throw new Error(`KoboldCPP API error: ${response.statusText}`);
+            const errorBody = await response.text().catch(() => 'Unknown error');
+            throw new Error(`KoboldCPP API error: ${response.status} ${response.statusText} - ${errorBody}`);
         }
+        
         const data = await response.json();
-        return data.results[0].text.trim();
+        
+        // Validate response structure
+        if (!data.results || !data.results[0] || !data.results[0].text) {
+            throw new Error('Invalid response structure from KoboldCPP');
+        }
+        
+        const summary = data.results[0].text.trim();
+        
+        // ✅ QUALITY FIX 8: Validate output is not empty
+        if (summary.length === 0) {
+            console.warn('⚠️ KoboldCPP returned empty summary');
+            throw new Error('KoboldCPP returned empty summary');
+        }
+        
+        return summary;
     } catch (error) {
         console.error("Error summarizing with KoboldCPP:", error);
-        throw error;
+        throw error; // Re-throw to be handled by caller with fallback logic
     }
 };
 

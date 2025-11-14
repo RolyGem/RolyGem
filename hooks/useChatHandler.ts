@@ -376,6 +376,7 @@ export const useChatHandler = (props: ChatHandlerProps) => {
           if (!managedHistory || managedHistory.length === 0) return;
           const currentSnapshot = conversationRef.current;
           if (!currentSnapshot) return;
+          
           const nextMessages = [...managedHistory];
           const thinkingInSnapshot = currentSnapshot.messages.find(m => m.id === thinkingMessage.id);
           if (thinkingInSnapshot && !nextMessages.some(m => m.id === thinkingInSnapshot.id)) {
@@ -434,13 +435,15 @@ export const useChatHandler = (props: ChatHandlerProps) => {
               if (!foreshadowController.signal.aborted) {
                   foreshadowController.abort();
               }
-              const currentConv = conversationRef.current;
+              let currentConv = conversationRef.current;
               if (!currentConv) return;
 
               if (newHistory && newHistory.length > 0 && !managedHistoryAppliedRef.current) {
                   const merged = applyManagedHistory(newHistory);
                   if (merged) {
                       managedHistoryAppliedRef.current = true;
+                      // 🔧 CRITICAL FIX: Update currentConv reference after applying managedHistory
+                      currentConv = conversationRef.current;
                   }
               }
                

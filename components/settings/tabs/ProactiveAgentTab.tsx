@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Settings, ProactiveAgentJob, ProactiveAgentService } from '../../../types';
-import { CheckboxInput, TextInput } from '../common/SettingsInputComponents';
+import { CheckboxInput, TextInput, NumberInput } from '../common/SettingsInputComponents';
+import { CollapsibleNotice } from '../../common/CollapsibleNotice';
 import { generateUUID } from '../../../utils/uuid';
 import { PlusIcon } from '../../icons/PlusIcon';
 import { TrashIcon } from '../../icons/TrashIcon';
@@ -324,14 +325,18 @@ const ProactiveAgentTab: React.FC<ProactiveAgentTabProps> = ({ settings, onLiveU
       </p>
 
       {/* Experimental Feature Notice */}
-      <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg space-y-2">
-        <p className="text-sm font-semibold text-blue-800 dark:text-blue-200">🧪 Experimental Feature - Under Active Development</p>
-        <p className="text-xs text-blue-700 dark:text-blue-300">
+      <CollapsibleNotice
+        title="Experimental Feature - Under Active Development"
+        variant="blue"
+        icon="🧪"
+        defaultExpanded={false}
+      >
+        <p>
           We're continuously working to deliver the best quality experience. While this feature provides automated task scheduling, 
           it's not yet a full agentic system. We're committed to building powerful AI agent capabilities into the platform in the near future, 
           including autonomous decision-making, complex workflow orchestration, and intelligent task prioritization.
         </p>
-      </div>
+      </CollapsibleNotice>
 
       <div className="space-y-4 p-4 border rounded-lg border-color">
         <CheckboxInput

@@ -5,12 +5,65 @@ import { generateUUID } from '../utils/uuid';
  * Summarization Debug Service
  * Collects and manages debug logs for smart summarization system
  * Only active when debugMode is enabled in settings
+ * ✅ Persists logs to localStorage to survive page reloads
  */
+
+const STORAGE_KEY = 'summarization_debug_logs';
+const MAX_STORAGE_AGE_DAYS = 7; // Keep logs for 7 days
 
 class SummarizationDebugService {
     private logs: SummarizationDebugLog[] = [];
     private listeners: Set<(logs: SummarizationDebugLog[]) => void> = new Set();
     private maxLogs = 100; // Keep last 100 logs
+
+    constructor() {
+        // ✅ Load persisted logs from localStorage on initialization
+        this.loadFromStorage();
+        // Clean old logs (older than 7 days)
+        this.cleanOldLogs();
+    }
+
+    /**
+     * Load logs from localStorage
+     */
+    private loadFromStorage(): void {
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                const parsed = JSON.parse(stored) as SummarizationDebugLog[];
+                this.logs = parsed.slice(-this.maxLogs); // Keep only last maxLogs
+                console.log(`📊 Loaded ${this.logs.length} summarization debug logs from storage`);
+            }
+        } catch (error) {
+            console.error('Failed to load summarization debug logs from storage:', error);
+            this.logs = [];
+        }
+    }
+
+    /**
+     * Save logs to localStorage
+     */
+    private saveToStorage(): void {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(this.logs));
+        } catch (error) {
+            console.error('Failed to save summarization debug logs to storage:', error);
+        }
+    }
+
+    /**
+     * Clean logs older than MAX_STORAGE_AGE_DAYS
+     */
+    private cleanOldLogs(): void {
+        const cutoffTime = Date.now() - (MAX_STORAGE_AGE_DAYS * 24 * 60 * 60 * 1000);
+        const initialCount = this.logs.length;
+        this.logs = this.logs.filter(log => log.timestamp > cutoffTime);
+        const removedCount = initialCount - this.logs.length;
+        if (removedCount > 0) {
+            console.log(`🧹 Cleaned ${removedCount} old summarization debug logs`);
+            this.saveToStorage();
+        }
+    }
 
     /**
      * Add a new debug log entry
@@ -27,6 +80,9 @@ class SummarizationDebugService {
         if (this.logs.length > this.maxLogs) {
             this.logs = this.logs.slice(-this.maxLogs);
         }
+
+        // ✅ Persist to localStorage
+        this.saveToStorage();
 
         // Notify listeners
         this.notifyListeners();
@@ -91,6 +147,7 @@ class SummarizationDebugService {
      */
     clearLogs(): void {
         this.logs = [];
+        this.saveToStorage(); // ✅ Persist to localStorage
         this.notifyListeners();
     }
 
@@ -99,6 +156,7 @@ class SummarizationDebugService {
      */
     clearConversationLogs(conversationId: string): void {
         this.logs = this.logs.filter(log => log.conversationId !== conversationId);
+        this.saveToStorage(); // ✅ Persist to localStorage
         this.notifyListeners();
     }
 
