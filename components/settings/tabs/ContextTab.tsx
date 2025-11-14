@@ -182,10 +182,74 @@ const ContextTab: React.FC<ContextTabProps> = ({
                     value={settings.contextManagement.summarizerModel}
                     options={[
                         { value: 'gemini', label: 'Gemini 2.5 Flash' },
+                        { value: 'openrouter', label: 'OpenRouter' },
                         { value: 'koboldcpp', label: 'KoboldCPP (Local)' }
                     ]}
                     onChange={(e) => handleContextInputChange(e as any)}
                 />
+
+                {settings.contextManagement.summarizerModel === 'openrouter' && (
+                    <>
+                        {!settings.openRouterApiKey ? (
+                            <div className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                                <p className="text-xs text-yellow-600 dark:text-yellow-400">
+                                    ⚠️ Please add your OpenRouter API key in General settings first
+                                </p>
+                            </div>
+                        ) : (
+                            <>
+                                {/* Model Selector */}
+                                <div className="mt-3">
+                                    <SelectInput
+                                        label="OpenRouter Model"
+                                        name="openRouterSummarizerModelId"
+                                        value={settings.contextManagement.openRouterSummarizerModelId}
+                                        onChange={handleOpenRouterModelChange}
+                                        disabled={isLoadingModels}
+                                        options={
+                                            isLoadingModels
+                                                ? [{ value: '', label: 'Loading models...' }]
+                                                : openRouterModels.length > 0
+                                                ? openRouterModels.map(model => ({
+                                                    value: model.id,
+                                                    label: `${model.name || model.id}${model.pricing?.prompt ? ` ($${model.pricing.prompt}/1M tokens)` : ''}`
+                                                  }))
+                                                : [{ value: settings.contextManagement.openRouterSummarizerModelId, label: settings.contextManagement.openRouterSummarizerModelId }]
+                                        }
+                                        helpText={isLoadingModels ? 'Fetching available models...' : `Selected: ${settings.contextManagement.openRouterSummarizerModelId}`}
+                                    />
+                                    {openRouterModels.length === 0 && !isLoadingModels && (
+                                        <button
+                                            onClick={loadOpenRouterModels}
+                                            className="mt-2 px-3 py-1 text-xs font-medium new-chat-btn rounded"
+                                        >
+                                            Refresh Models
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Test Connection */}
+                                <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-medium">Test Connection:</span>
+                                        <button
+                                            onClick={handleTestOpenRouter}
+                                            disabled={openRouterTestStatus === 'loading'}
+                                            className="px-3 py-1 text-xs font-medium new-chat-btn rounded disabled:opacity-50"
+                                        >
+                                            {openRouterTestStatus === 'loading' ? 'Testing...' : 'Test Model'}
+                                        </button>
+                                    </div>
+                                    {openRouterTestStatus !== 'idle' && (
+                                        <div className="text-xs">
+                                            {getStatusIndicator(openRouterTestStatus, openRouterTestMessage, openRouterTestMessage)}
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                        )}
+                    </>
+                )}
 
                 {settings.contextManagement.summarizerModel === 'koboldcpp' && (
                     <div>

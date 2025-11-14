@@ -155,13 +155,30 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({ models, selectedMo
                       className={`w-full flex items-center gap-2 px-4 py-1.5 text-xs list-item group ${selectedModel === model.id ? 'list-item-active' : 'text-text-primary'}`}
                     >
                       <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <button
-                          onClick={(e) => togglePin(model.id, e)}
-                          className="flex-shrink-0 hover:scale-110 transition-transform"
+                        <span
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            togglePin(model.id, e);
+                          }}
+                          className="flex-shrink-0 hover:scale-110 transition-transform cursor-pointer"
                           title="Unpin"
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              const syntheticEvent = {
+                                ...e,
+                                stopPropagation: () => {},
+                                preventDefault: () => {}
+                              } as any;
+                              togglePin(model.id, syntheticEvent);
+                            }
+                          }}
                         >
                           <StarIcon className="w-3 h-3 text-yellow-500" filled />
-                        </button>
+                        </span>
                         <span className="truncate font-medium flex-1 text-left">{model.name}</span>
                         {model.contextLengthTokens && (
                           <span className="text-[10px] text-text-secondary opacity-60 flex-shrink-0 min-w-[30px] text-right">
@@ -211,16 +228,34 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({ models, selectedMo
                                       className={`w-full flex items-center gap-2 px-4 py-1.5 text-xs list-item group ${selectedModel === model.id ? 'list-item-active' : 'text-text-primary'}`}
                                     >
                                       <div className="flex items-center gap-2 flex-1 min-w-0">
-                                        <button
-                                          onClick={(e) => togglePin(model.id, e)}
-                                          className="flex-shrink-0 hover:scale-110 transition-transform"
+                                        <span
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            togglePin(model.id, e);
+                                          }}
+                                          className="flex-shrink-0 hover:scale-110 transition-transform cursor-pointer"
                                           title={pinnedModels.includes(model.id) ? 'Unpin' : 'Pin'}
+                                          role="button"
+                                          tabIndex={0}
+                                          onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                              e.preventDefault();
+                                              e.stopPropagation();
+                                              // Create a synthetic mouse event for togglePin
+                                              const syntheticEvent = {
+                                                ...e,
+                                                stopPropagation: () => {},
+                                                preventDefault: () => {}
+                                              } as any;
+                                              togglePin(model.id, syntheticEvent);
+                                            }
+                                          }}
                                         >
                                           <StarIcon 
                                             className={`w-3 h-3 ${pinnedModels.includes(model.id) ? 'text-yellow-500' : 'text-text-secondary opacity-50'}`}
                                             filled={pinnedModels.includes(model.id)}
                                           />
-                                        </button>
+                                        </span>
                                         <span className="truncate font-medium flex-1 text-left">{model.name}</span>
                                         {model.contextLengthTokens && (
                                           <span className="text-[10px] text-text-secondary opacity-60 flex-shrink-0 min-w-[30px] text-right">
