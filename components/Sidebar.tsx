@@ -84,17 +84,22 @@ const ConversationItemMenu: React.FC<{
   useEffect(() => {
     if (!isOpen) return;
     
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node;
       if (
-        buttonRef.current && !buttonRef.current.contains(e.target as Node) &&
-        menuRef.current && !menuRef.current.contains(e.target as Node)
+        buttonRef.current && !buttonRef.current.contains(target) &&
+        menuRef.current && !menuRef.current.contains(target)
       ) {
         setIsOpen(false);
       }
     };
     
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, [isOpen]);
 
   // Close on Escape
@@ -139,6 +144,7 @@ const ConversationItemMenu: React.FC<{
         direction: 'ltr',
       }}
       onMouseDown={(e) => { e.stopPropagation(); }}
+      onTouchStart={(e) => { e.stopPropagation(); }}
       onClick={(e) => { e.stopPropagation(); }}
     >
       <div className="space-y-0.5">
@@ -189,7 +195,11 @@ const ConversationItemMenu: React.FC<{
         <MoreVerticalIcon className="w-4 h-4" />
       </button>
       {isOpen && createPortal(
-        <div className="fixed inset-0 z-[9998]" onClick={() => setIsOpen(false)} />, 
+        <div 
+          className="fixed inset-0 z-[9998]" 
+          onClick={() => setIsOpen(false)}
+          onTouchStart={() => setIsOpen(false)}
+        />, 
         document.body
       )}
       {menuContent && createPortal(menuContent, document.body)}

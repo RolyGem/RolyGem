@@ -17,14 +17,15 @@ export default defineConfig(({ mode }) => {
         ignored: ['**']
       },
 
-      // Allow specific reverse-proxy hosts (Ngrok, Cloudflare, production domain)
-      allowedHosts: [
-        'neustic-fernando-untediously.ngrok-free.dev', // current Ngrok tunnel
-        '*.ngrok-free.dev', // allow any Ngrok free host
-        'widescreen-certificates-gather-sydney.trycloudflare.com', // current Cloudflare tunnel
-        '*.trycloudflare.com', // allow any Cloudflare tunnel host
-        'app.geminifutionchat.site', // production domain
-      ],
+      // Allow all hosts (for cloudflared tunnels)
+      allowedHosts: true,
+    },
+    preview: {
+      port: 5173,
+      host: '0.0.0.0',
+      
+      // Allow all hosts (for cloudflared tunnels)
+      allowedHosts: true,
     },
     plugins: [react(), wasm()],
     define: {

@@ -13,6 +13,7 @@ interface GeneralTabProps {
 
 const GeneralTab: React.FC<GeneralTabProps> = ({ settings, onLiveUpdate }) => {
   const [showAllKeys, setShowAllKeys] = useState(false);
+  const [activeApiTab, setActiveApiTab] = useState<'gemini' | 'openrouter' | 'xai'>('gemini');
   
   // Parse keys - keep empty strings to maintain UI state
   const getKeys = () => {
@@ -61,117 +62,176 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ settings, onLiveUpdate }) => {
   
   return (
     <div className="p-3 sm:p-4 md:p-6 overflow-y-auto space-y-4 sm:space-y-6 flex-1">
-        <div className="space-y-4">
-            {/* Gemini API Keys Section */}
-            <div>
-                <div className="flex items-center justify-between mb-2">
-                    <label className="block text-sm font-medium">Gemini API Keys</label>
-                    <div className="flex gap-2">
-                        {keys.length > 1 && (
-                            <button
-                                type="button"
-                                onClick={() => setShowAllKeys(!showAllKeys)}
-                                className="flex items-center gap-1 px-2 py-1 text-xs rounded-md bg-bg-secondary hover:bg-bg-tertiary transition-colors"
-                            >
-                                <EyeIcon className="w-3 h-3" />
-                                {showAllKeys ? 'Hide' : 'Show'} ({keys.length})
-                            </button>
-                        )}
-                        <button
-                            type="button"
-                            onClick={addKey}
-                            className="flex items-center gap-1 px-2 py-1 text-xs rounded-md bg-primary hover:bg-primary-hover text-white transition-colors"
-                        >
-                            <PlusIcon className="w-3 h-3" />
-                            Add Key
-                        </button>
-                    </div>
-                </div>
-                
-                <div className="space-y-2">
-                    {keys.map((key, i) => (
-                        <div
-                            key={i}
-                            className={`flex gap-2 transition-opacity ${!showAllKeys && i > 0 ? 'opacity-30 pointer-events-none' : ''}`}
-                        >
-                            <input
-                                type="password"
-                                value={key}
-                                onChange={(e) => updateKey(i, e.target.value)}
-                                className="flex-1 px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 modal-input"
-                                placeholder={i === 0 ? "Primary Key" : `Key ${i + 1}`}
-                            />
-                            {keys.length > 1 && (
+        {/* API Keys Section with Tabs */}
+        <div className="border border-color rounded-lg overflow-hidden">
+            {/* Tabs Header */}
+            <div className="flex border-b border-color bg-bg-secondary/30">
+                <button
+                    type="button"
+                    onClick={() => setActiveApiTab('gemini')}
+                    className={`flex-1 px-2 sm:px-4 py-2.5 sm:py-3 text-xs font-medium transition-colors ${
+                        activeApiTab === 'gemini'
+                            ? 'bg-primary text-white border-b-2 border-primary'
+                            : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
+                    }`}
+                >
+                    <span className="flex items-center justify-center gap-1">
+                        <span className="text-sm">🤖</span>
+                        <span className="text-xs">Gemini</span>
+                    </span>
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setActiveApiTab('openrouter')}
+                    className={`flex-1 px-2 sm:px-4 py-2.5 sm:py-3 text-xs font-medium transition-colors ${
+                        activeApiTab === 'openrouter'
+                            ? 'bg-primary text-white border-b-2 border-primary'
+                            : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
+                    }`}
+                >
+                    <span className="flex items-center justify-center gap-1">
+                        <span className="text-sm">🌐</span>
+                        <span className="text-xs">OpenRouter</span>
+                    </span>
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setActiveApiTab('xai')}
+                    className={`flex-1 px-2 sm:px-4 py-2.5 sm:py-3 text-xs font-medium transition-colors ${
+                        activeApiTab === 'xai'
+                            ? 'bg-primary text-white border-b-2 border-primary'
+                            : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
+                    }`}
+                >
+                    <span className="flex items-center justify-center gap-1">
+                        <span className="text-sm">⚡</span>
+                        <span className="text-xs">XAI</span>
+                    </span>
+                </button>
+            </div>
+
+            {/* Tab Content */}
+            <div className="p-4 sm:p-5">
+                {/* Gemini Tab */}
+                {activeApiTab === 'gemini' && (
+                    <div>
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="text-sm font-medium">Gemini API Keys</h3>
+                            <div className="flex gap-2">
+                                {keys.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowAllKeys(!showAllKeys)}
+                                        className="flex items-center gap-1 px-2 py-1 text-xs rounded-md bg-bg-secondary hover:bg-bg-tertiary transition-colors"
+                                    >
+                                        <EyeIcon className="w-3 h-3" />
+                                        {showAllKeys ? 'Hide' : 'Show'} ({keys.length})
+                                    </button>
+                                )}
                                 <button
                                     type="button"
-                                    onClick={() => removeKey(i)}
-                                    className="p-2 rounded-md hover:bg-red-500/10 text-red-500"
+                                    onClick={addKey}
+                                    className="flex items-center gap-1 px-2 py-1 text-xs rounded-md bg-primary hover:bg-primary-hover text-white transition-colors"
                                 >
-                                    <TrashIcon className="w-4 h-4" />
+                                    <PlusIcon className="w-3 h-3" />
+                                    Add Key
                                 </button>
-                            )}
+                            </div>
                         </div>
-                    ))}
-                </div>
+                        
+                        <div className="space-y-2">
+                            {keys.map((key, i) => (
+                                <div
+                                    key={i}
+                                    className={`flex gap-2 transition-opacity ${!showAllKeys && i > 0 ? 'opacity-30 pointer-events-none' : ''}`}
+                                >
+                                    <input
+                                        type="password"
+                                        value={key}
+                                        onChange={(e) => updateKey(i, e.target.value)}
+                                        className="flex-1 px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 modal-input"
+                                        placeholder={i === 0 ? "Primary Key" : `Key ${i + 1}`}
+                                    />
+                                    {keys.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeKey(i)}
+                                            className="p-2 rounded-md hover:bg-red-500/10 text-red-500"
+                                        >
+                                            <TrashIcon className="w-4 h-4" />
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
 
-                <div className="mt-2 space-y-1">
-                    <p className="text-xs text-text-secondary">
-                        💡 Add multiple keys for automatic failover. When one key fails or exceeds quota, the app automatically tries the next key.
-                    </p>
-                    <p className="text-xs text-blue-600 dark:text-blue-400">
-                        🔗 Get your API keys at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Google AI Studio</a>
-                    </p>
-                    <p className="text-xs text-text-secondary italic">
-                        🔒 Keep your API key secure and never share it with anyone. It's your responsibility.
-                    </p>
-                </div>
-            </div>
-            <div>
-                <label htmlFor="openRouterApiKey" className="block text-sm font-medium">OpenRouter API Key</label>
-                <input
-                    type="password"
-                    id="openRouterApiKey"
-                    name="openRouterApiKey"
-                    value={settings.openRouterApiKey}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 modal-input"
-                    placeholder="Enter your OpenRouter API Key"
-                />
-                <div className="mt-2 space-y-1">
-                    <p className="text-xs text-text-secondary">
-                        Used for accessing models from OpenRouter's unified API.
-                    </p>
-                    <p className="text-xs text-blue-600 dark:text-blue-400">
-                        🔗 Get your API key at <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">OpenRouter Keys</a>
-                    </p>
-                    <p className="text-xs text-text-secondary italic">
-                        🔒 Keep your API key secure and never share it with anyone. It's your responsibility.
-                    </p>
-                </div>
-            </div>
+                        <div className="mt-3 space-y-1.5">
+                            <p className="text-xs text-text-secondary">
+                                💡 Add multiple keys for automatic failover. When one key fails or exceeds quota, the app automatically tries the next key.
+                            </p>
+                            <p className="text-xs text-blue-600 dark:text-blue-400">
+                                🔗 Get your API keys at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Google AI Studio</a>
+                            </p>
+                            <p className="text-xs text-text-secondary italic">
+                                🔒 Keep your API key secure and never share it with anyone. It's your responsibility.
+                            </p>
+                        </div>
+                    </div>
+                )}
 
-            <div>
-                <label htmlFor="xaiApiKey" className="block text-sm font-medium">XAI API Key (Grok)</label>
-                <input
-                    type="password"
-                    id="xaiApiKey"
-                    name="xaiApiKey"
-                    value={settings.xaiApiKey}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 modal-input"
-                    placeholder="Enter your XAI API Key"
-                />
-                <div className="mt-2 space-y-1">
-                    <p className="text-xs text-text-secondary">
-                        Used for accessing Grok models (Grok 4, Grok 3, Grok 3 Mini, etc.) from XAI's API.
-                    </p>
-                    <p className="text-xs text-blue-600 dark:text-blue-400">
-                        🔗 Get your API key at <a href="https://console.x.ai" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">XAI Console</a>
-                    </p>
-                    <p className="text-xs text-text-secondary italic">
-                        🔒 Keep your API key secure and never share it with anyone. It's your responsibility.
-                    </p>
-                </div>
+                {/* OpenRouter Tab */}
+                {activeApiTab === 'openrouter' && (
+                    <div>
+                        <h3 className="text-sm font-medium mb-3">OpenRouter API Key</h3>
+                        <input
+                            type="password"
+                            id="openRouterApiKey"
+                            name="openRouterApiKey"
+                            value={settings.openRouterApiKey}
+                            onChange={handleInputChange}
+                            className="block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 modal-input"
+                            placeholder="Enter your OpenRouter API Key"
+                        />
+                        <div className="mt-3 space-y-1.5">
+                            <p className="text-xs text-text-secondary">
+                                Used for accessing models from OpenRouter's unified API.
+                            </p>
+                            <p className="text-xs text-blue-600 dark:text-blue-400">
+                                🔗 Get your API key at <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">OpenRouter Keys</a>
+                            </p>
+                            <p className="text-xs text-text-secondary italic">
+                                🔒 Keep your API key secure and never share it with anyone. It's your responsibility.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* XAI Tab */}
+                {activeApiTab === 'xai' && (
+                    <div>
+                        <h3 className="text-sm font-medium mb-3">XAI API Key (Grok)</h3>
+                        <input
+                            type="password"
+                            id="xaiApiKey"
+                            name="xaiApiKey"
+                            value={settings.xaiApiKey}
+                            onChange={handleInputChange}
+                            className="block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 modal-input"
+                            placeholder="Enter your XAI API Key"
+                        />
+                        <div className="mt-3 space-y-1.5">
+                            <p className="text-xs text-text-secondary">
+                                Used for accessing Grok models (Grok 4, Grok 3, Grok 3 Mini, etc.) from XAI's API.
+                            </p>
+                            <p className="text-xs text-blue-600 dark:text-blue-400">
+                                🔗 Get your API key at <a href="https://console.x.ai" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">XAI Console</a>
+                            </p>
+                            <p className="text-xs text-text-secondary italic">
+                                🔒 Keep your API key secure and never share it with anyone. It's your responsibility.
+                            </p>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
 

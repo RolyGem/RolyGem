@@ -11,6 +11,14 @@
 
 [✨ Features](#-features) • [🚀 Quick Start](#-quick-start) • [📚 Documentation](#-documentation) • [🤝 Contributing](#-contributing)
 
+---
+
+### 🌐 Try it Live!
+
+**Experience RolyGem without installation:** [**https://rolygem.com**](https://rolygem.com) 🚀
+
+*Your data stays private - everything is stored locally in your browser.*
+
 </div>
 
 ---

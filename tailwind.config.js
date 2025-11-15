@@ -9,7 +9,11 @@ export default {
   ],
   darkMode: 'class',
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        'xs': '480px',
+      },
+    },
   },
   plugins: [
     require('@tailwindcss/typography'),
